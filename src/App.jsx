@@ -1,5 +1,5 @@
 import "./App.css";
-import { FcCalculator } from "react-icons/fc"; // Altere o ícone para um ícone de calculadora
+import { FcCalculator } from "react-icons/fc"; 
 import { Form } from "./components/Form";
 
 function App() {
