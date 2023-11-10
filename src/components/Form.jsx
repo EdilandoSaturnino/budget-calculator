@@ -9,7 +9,7 @@ export function Form() {
   const [icms, setIcms] = useState("");
   const [lucro, setLucro] = useState(1);
   const [descontoFalso, setDescontoFalso] = useState("");
-  const [precoFinal, setPrecoFinal] = useState("0,00");
+  const [precoFinal, setPrecoFinal] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
 
