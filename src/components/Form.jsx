@@ -4,10 +4,10 @@ import FormInputGroup from "./FormInputGroup";
 
 export function Form() {
   const [valorInicial, setValorInicial] = useState("");
-  const [ipi, setIpi] = useState(3.25);
+  const [ipi, setIpi] = useState("");
   const [st, setSt] = useState("");
-  const [icms, setIcms] = useState("");
-  const [lucro, setLucro] = useState(1);
+  const [icms, setIcms] = useState(18);
+  const [lucro, setLucro] = useState(1.55);
   const [descontoFalso, setDescontoFalso] = useState("");
   const [precoFinal, setPrecoFinal] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
