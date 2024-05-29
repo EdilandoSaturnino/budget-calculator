@@ -6,52 +6,57 @@ export function Form() {
   const [valorInicial, setValorInicial] = useState("");
   const [ipi, setIpi] = useState("");
   const [st, setSt] = useState("");
-  const [icms, setIcms] = useState(18);
+  const [icms, setIcms] = useState("18");
   const [lucro, setLucro] = useState(1.55);
   const [descontoFalso, setDescontoFalso] = useState("");
-  const [precoFinal, setPrecoFinal] = useState(0);
+  const [precoFinal, setPrecoFinal] = useState("0,00");
   const [isCopied, setIsCopied] = useState(false);
-  const [showCopied, setShowCopied] = useState(false);
 
   const estadosICMS = {
+    AC: "7",
+    AL: "7",
+    AP: "7",
+    AM: "7",
+    BA: "7",
+    CE: "7",
+    DF: "7",
+    ES: "7",
+    GO: "7",
+    MA: "7",
+    MT: "7",
+    MS: "7",
+    MG: "12",
+    PA: "7",
+    PB: "7",
+    PR: "12",
+    PE: "7",
+    PI: "7",
+    RJ: "12",
+    RN: "7",
+    RS: "12",
+    RO: "7",
+    RR: "7",
+    SC: "12",
+    SE: "7",
     SP: "18",
-    RJ: "20",
-    SC: "17",
-    ES: "17",
-    RS: "18",
-    BA: "18",
-    AC: "17",
-    AL: "18",
-    AP: "18",
-    AM: "18",
-    CE: "18",
-    DF: "18",
-    GO: "17",
-    MA: "18",
-    MT: "17",
-    MS: "17",
-    MG: "18",
-    PA: "17",
-    PB: "18",
-    PR: "18",
-    PE: "18",
-    PI: "18",
-    RN: "18",
-    RO: "17.5",
-    RR: "17",
-    SE: "18",
-    TO: "18",
+    TO: "7",
   };
 
   useEffect(() => {
-    let valorBase = Number(valorInicial);
-    let ipiCalculado = valorBase * (Number(ipi) / 100) + valorBase;
-    let stCalculado = ipiCalculado * (Number(st) / 100) + ipiCalculado;
-    let icmsCalculado = stCalculado * (Number(icms) / 100) + stCalculado;
-    let total = icmsCalculado * Number(lucro);
+    const normalizeValue = (value) => {
+      if (!value) return 0;
+      return parseFloat(value.toString().replace(",", "."));
+    };
+
+    let valorBase = normalizeValue(valorInicial) || 0;
+    let ipiCalculado = valorBase * (normalizeValue(ipi) / 100) + valorBase;
+    let stCalculado = ipiCalculado * (normalizeValue(st) / 100) + ipiCalculado;
+    let icmsCalculado =
+      stCalculado * (normalizeValue(icms) / 100) + stCalculado;
+    let total = icmsCalculado * normalizeValue(lucro);
 
     if (descontoFalso) {
-      total = total / (1 - Number(descontoFalso) / 100);
+      total = total / (1 - normalizeValue(descontoFalso) / 100);
     }
 
     setPrecoFinal(
@@ -67,75 +72,89 @@ export function Form() {
   }
 
   function copiarPrecoFinal() {
-    navigator.clipboard
-      .writeText(precoFinal)
-      .then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(precoFinal)
+        .then(() => {
+          setIsCopied(true);
+          setTimeout(() => {
+            setIsCopied(false);
+          }, 2000);
+        })
+        .catch((err) => {
+          console.error("Erro ao copiar preço final: ", err);
+        });
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = precoFinal;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand("copy");
         setIsCopied(true);
-        setShowCopied(true);
         setTimeout(() => {
           setIsCopied(false);
-          setShowCopied(false);
         }, 2000);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Erro ao copiar preço final: ", err);
-      });
+      }
+      document.body.removeChild(textArea);
+    }
   }
 
   function handleICMSSelection(event) {
-    const estado = event.target.options[event.target.selectedIndex].value.slice(
-      0,
-      2
-    );
+    const estado = event.target.value.slice(0, 2);
     const icmsValue = estadosICMS[estado];
-    setIcms(icmsValue);
+    if (icmsValue) {
+      setIcms(icmsValue);
+    }
   }
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
       <FormInputGroup
         text="Valor Inicial (R$)"
-        placeholder={"Digite o valor inicial"}
+        placeholder="Digite o valor inicial"
         value={valorInicial}
         onInput={(e) => handleInputChange(e, setValorInicial)}
       />
       <FormInputGroup
         text="IPI (%)"
-        placeholder={"Digite a porcentagem do IPI"}
+        placeholder="Digite a porcentagem do IPI"
         value={ipi}
         onInput={(e) => handleInputChange(e, setIpi)}
       />
       <FormInputGroup
         text="ST (%)"
-        placeholder={"Digite a porcentagem do ST"}
+        placeholder="Digite a porcentagem do ST"
         value={st}
         onInput={(e) => handleInputChange(e, setSt)}
       />
       <FormInputGroup
         list="icms-options"
         text="ICMS (%)"
-        placeholder={"Digite a porcentagem do ICMS ou escolha um estado"}
+        placeholder="Digite a porcentagem do ICMS ou escolha um estado"
         onChange={handleICMSSelection}
         value={icms}
         onInput={(e) => handleInputChange(e, setIcms)}
       />
       <datalist id="icms-options">
         {Object.entries(estadosICMS).map(([estado, icmsValue]) => (
-          <option
-            key={estado}
-            value={icmsValue}
-          >{`${estado} - ${icmsValue}%`}</option>
+          <option key={estado} value={`${estado} - ${icmsValue}`}>
+            {`${estado} - ${icmsValue}%`}
+          </option>
         ))}
       </datalist>
       <FormInputGroup
         text="Lucro (Multiplicador)"
-        placeholder={"Digite o multiplicador de lucro"}
+        placeholder="Digite o multiplicador de lucro"
         value={lucro}
         onInput={(e) => handleInputChange(e, setLucro)}
       />
       <FormInputGroup
         text="Desconto Falso (%)"
-        placeholder={"Digite o 'desconto' falso (opcional)"}
+        placeholder="Digite o 'desconto' falso (opcional)"
         value={descontoFalso}
         onInput={(e) => handleInputChange(e, setDescontoFalso)}
       />
@@ -150,7 +169,7 @@ export function Form() {
         onClick={copiarPrecoFinal}
       >
         Preço Final: R${precoFinal}
-        <FaCopy className="ms-2" style={{ opacity: isCopied ? 0 : 0.6 }} />{" "}
+        <FaCopy className="ms-2" style={{ opacity: isCopied ? 0 : 0.6 }} />
         {isCopied && <span className="ms-2">Copiado!</span>}
       </div>
     </form>

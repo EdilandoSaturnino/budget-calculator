@@ -6,23 +6,23 @@ function FormInputGroup({
   placeholder,
   value,
   onInput,
-  onkeyup,
+  onChange,
   list,
   readOnly = false,
 }) {
   return (
-    <div className="input-group mb-3 ">
-      <span className="input-group-text ">
+    <div className="input-group mb-3">
+      <span className="input-group-text">
         {text} {icon}
       </span>
       <input
         list={list}
-        type="number"
+        type="text"
         value={value}
         className="form-control"
         placeholder={placeholder}
         onInput={onInput}
-        onKeyUp={onkeyup}
+        onChange={onChange}
         readOnly={readOnly}
       />
     </div>

@@ -4,10 +4,7 @@ import { Form } from "./components/Form";
 
 function App() {
   return (
-    <div
-      className="App container"
-      style={{ maxWidth: 500, margin: "1rem auto" }}
-    >
+    <div className="App container" style={{ maxWidth: 500, margin: "1rem auto" }}>
       <h1 className="display-1 mb-3">
         <FcCalculator />
       </h1>
